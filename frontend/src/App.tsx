@@ -1,8 +1,10 @@
 // client/src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import TaskModal from './components/TaskModal';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import BoardPage from './pages/BoardPage';
@@ -19,18 +21,35 @@ function PrivateRoute({ children, roles }: { children: React.ReactElement; roles
 }
 
 function AppLayout() {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleTaskSaved = () => {
+    setShowCreateModal(false);
+    // Dispatch global event for live updates on components
+    window.dispatchEvent(new Event('task-created'));
+  };
+
   return (
     <>
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
-          <Route path="/projects" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
-          <Route path="/users" element={<PrivateRoute roles={['ADMIN']}><UsersPage /></PrivateRoute>} />
-          <Route path="/analytics" element={<PrivateRoute roles={['ADMIN', 'MANAGER']}><AnalyticsPage /></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
+      <Navbar onCreateTask={() => setShowCreateModal(true)} />
+      <div className="app-layout-body">
+        <Sidebar />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
+            <Route path="/projects" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
+            <Route path="/users" element={<PrivateRoute roles={['ADMIN']}><UsersPage /></PrivateRoute>} />
+            <Route path="/analytics" element={<PrivateRoute roles={['ADMIN', 'MANAGER']}><AnalyticsPage /></PrivateRoute>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
+      {showCreateModal && (
+        <TaskModal
+          onClose={() => setShowCreateModal(false)}
+          onSaved={handleTaskSaved}
+        />
+      )}
     </>
   );
 }

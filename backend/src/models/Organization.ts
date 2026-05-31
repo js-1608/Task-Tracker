@@ -8,7 +8,7 @@ export interface IOrganization extends Document {
 
 const OrganizationSchema = new Schema<IOrganization>(
   { name: { type: String, required: true, trim: true } },
-  { timestamps: { createdAt: true, updatedAt: false } },
+  { timestamps: { createdAt: true, updatedAt: false }, toJSON: { virtuals: true } },
 );
 
 export const Organization: Model<IOrganization> =

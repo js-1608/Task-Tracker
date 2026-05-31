@@ -72,6 +72,7 @@ export const usersApi = {
   list: () => api.get('/users'),
   updateRole: (id: string, role: string) => api.patch(`/users/${id}/role`, { role }),
   delete: (id: string) => api.delete(`/users/${id}`),
+  createUser: (body: Record<string, unknown>) => api.post('/users', body),
 };
 
 // ─── Analytics ───────────────────────────────────────────────────────────────

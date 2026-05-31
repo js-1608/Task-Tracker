@@ -18,7 +18,6 @@ const RefreshTokenSchema = new Schema<IRefreshToken>(
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 
-RefreshTokenSchema.index({ token: 1 });
 RefreshTokenSchema.index({ userId: 1 });
 // TTL index — MongoDB auto-deletes expired tokens after 1 day grace period
 RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 86400 });

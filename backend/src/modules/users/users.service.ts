@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 import { User, Role } from '../../models/User';
 import { ApiError } from '../../utils/ApiError';
 import { invalidateOrgTaskCache } from '../../utils/cache';
+import { hashPassword } from '../../utils/password';
+import { CreateUserInput } from './users.schema';
 
 const USER_PROJECTION = '-passwordHash';
 
@@ -54,4 +56,21 @@ export async function deleteUser(orgId: string, targetUserId: string, requesterI
 
   if (!user) throw ApiError.notFound(`User ${targetUserId} not found in your organization`);
   await invalidateOrgTaskCache(orgId);
+}
+
+export async function createUser(orgId: string, input: CreateUserInput) {
+  const existing = await User.findOne({ email: input.email.toLowerCase() });
+  if (existing) throw ApiError.conflict('Email is already registered', 'EMAIL_TAKEN');
+
+  const passwordHash = await hashPassword(input.password);
+
+  const user = await User.create({
+    email: input.email.toLowerCase(),
+    name: input.name,
+    passwordHash,
+    role: input.role,
+    orgId: new Types.ObjectId(orgId),
+  });
+
+  return user;
 }

@@ -1,7 +1,8 @@
 // tests/task-status.test.ts
 import request from 'supertest';
 import app from '../src/app';
-import { prisma } from '../src/config/db';
+import { User } from '../src/models/User';
+import { signAccessToken } from '../src/utils/jwt';
 
 const ADMIN_EMAIL = `admin_${Date.now()}@test.com`;
 const MEMBER_EMAIL = `member_${Date.now()}@test.com`;
@@ -33,21 +34,24 @@ describe('Task Status Transitions', () => {
       .send({ name: 'Test Project' });
     projectId = projRes.body.data.id;
 
-    // Register member into same org (simulate via login after admin creates them)
-    // For simplicity in tests, register fresh and grab a member user via admin
+    // Register member fresh (which creates a temp org)
     const memberRegRes = await request(app).post('/api/auth/register').send({
       orgName: `MemberOrg_${Date.now()}`,
       name: 'Member',
       email: MEMBER_EMAIL,
       password: PASSWORD,
     });
-    memberToken = memberRegRes.body.data.accessToken;
     memberId = memberRegRes.body.data.user.id;
+
+    // Update member user directly in database to belong to the admin's organization with role MEMBER
+    await User.findByIdAndUpdate(memberId, { orgId, role: 'MEMBER' });
+
+    // Generate a valid access token for the member with the updated organization and role
+    memberToken = signAccessToken({ userId: memberId, orgId, role: 'MEMBER' });
   });
 
   afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email: { in: [ADMIN_EMAIL, MEMBER_EMAIL] } } });
-    await prisma.$disconnect();
+    await User.deleteMany({ email: { $in: [ADMIN_EMAIL, MEMBER_EMAIL] } });
   });
 
   beforeEach(async () => {

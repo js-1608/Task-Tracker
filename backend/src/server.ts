@@ -11,7 +11,11 @@ const PORT = parseInt(env.PORT, 10);
 async function main() {
   try {
     await connectDB();
-    await redis.connect();
+    try {
+      await redis.connect();
+    } catch (err) {
+      logger.warn('⚠️ Redis connection failed. Caching will be disabled/bypassed.', { err });
+    }
 
     const server = app.listen(PORT, () => {
       logger.info(`🚀 Server running on http://localhost:${PORT}`);
@@ -22,7 +26,11 @@ async function main() {
       logger.info(`${signal} received — shutting down gracefully`);
       server.close(async () => {
         await disconnectDB();
-        await redis.quit();
+        try {
+          await redis.quit();
+        } catch (err) {
+          // Ignore connection closed errors on quit
+        }
         logger.info('Connections closed. Goodbye.');
         process.exit(0);
       });

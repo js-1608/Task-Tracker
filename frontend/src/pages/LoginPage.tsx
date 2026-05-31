@@ -30,20 +30,22 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-icon"><Layers size={24} color="white" /></div>
-          <h1>Welcome back</h1>
-          <p>Sign in to your workspace</p>
+          <div className="auth-logo-icon">
+            <Layers size={20} color="#ffffff" />
+          </div>
+          <h1>Sign in to your account</h1>
+          <p>Access your team's TaskTracker board</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email address</label>
             <input
               id="email"
               type="email"
-              placeholder="you@company.com"
+              placeholder="e.g. you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -63,21 +65,21 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={loading}>
-            {loading ? <span className="spinner" /> : <LogIn size={16} />}
-            {loading ? 'Signing in…' : 'Sign In'}
+          <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '0.5rem' }} disabled={loading}>
+            {loading ? <span className="spinner" style={{ borderTopColor: '#ffffff' }} /> : <LogIn size={15} />}
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
         <div className="auth-footer">
-          No account yet?{' '}
-          <Link to="/register">Create workspace</Link>
+          New to TaskTracker?{' '}
+          <Link to="/register">Create a workspace</Link>
         </div>
 
         <hr className="divider" />
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-          <strong style={{ color: 'var(--text-secondary)' }}>Demo:</strong>
-          {' admin@demo.com / Admin123'}
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center', background: 'var(--bg-secondary)', padding: '8px', borderRadius: 'var(--radius)' }}>
+          <strong style={{ color: 'var(--text-primary)' }}>Demo Account:</strong>
+          <div style={{ marginTop: '2px', fontFamily: 'monospace' }}>admin@demo.com / Admin123</div>
         </div>
       </div>
     </div>

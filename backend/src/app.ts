@@ -31,7 +31,7 @@ app.use(
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: parseInt(env.RATE_LIMIT_WINDOW_MS, 10),
-  max: parseInt(env.RATE_LIMIT_MAX, 10),
+  max: env.NODE_ENV === 'development' || env.NODE_ENV === 'test' ? 10000 : parseInt(env.RATE_LIMIT_MAX, 10),
   standardHeaders: true,
   legacyHeaders: false,
   message: { status: 429, code: 'RATE_LIMITED', message: 'Too many requests, please try again later' },

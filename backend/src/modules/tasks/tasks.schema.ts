@@ -37,7 +37,7 @@ export const updateStatusSchema = z.object({
 
 export const listTasksQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  limit: z.coerce.number().int().min(1).max(500).default(20),
   status: z.enum(['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'BLOCKED'] as [TaskStatus, ...TaskStatus[]]).optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH'] as [Priority, ...Priority[]]).optional(),
   assigneeId: z.string().optional(),

@@ -37,7 +37,7 @@ const TaskSchema = new Schema<ITask>(
     createdById: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     completedAt: { type: Date },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { virtuals: true } },
 );
 
 // Indexes on frequently queried fields (documented in README)

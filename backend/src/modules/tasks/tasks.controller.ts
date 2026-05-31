@@ -44,6 +44,8 @@ export async function list(req: Request, res: Response, next: NextFunction) {
       req.user!.orgId,
       req.query as unknown as ListTasksQuery,
     );
+          console.log("something else is wrong")
+
     sendSuccess(res, result.tasks, 'Tasks retrieved', 200, {
       total: result.total,
       page: result.page,

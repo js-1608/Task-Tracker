@@ -19,7 +19,15 @@ export function validate(schema: ZodSchema, part: RequestPart = 'body') {
       return next(ApiError.validationError(messages || error.message));
     }
     // Replace the request part with the parsed (and coerced) data
-    (req as unknown as Record<string, unknown>)[part] = result.data;
+    if (part === 'query') {
+      const queryObj = req.query as Record<string, unknown>;
+      for (const key of Object.keys(queryObj)) {
+        delete queryObj[key];
+      }
+      Object.assign(queryObj, result.data);
+    } else {
+      (req as any)[part] = result.data;
+    }
     next();
   };
 }

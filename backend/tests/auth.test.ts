@@ -1,7 +1,7 @@
 // tests/auth.test.ts
 import request from 'supertest';
 import app from '../src/app';
-import { prisma } from '../src/config/db';
+import { User } from '../src/models/User';
 
 const TEST_ORG = 'Test Corp ' + Date.now();
 const TEST_EMAIL = `test_${Date.now()}@example.com`;
@@ -13,8 +13,7 @@ let refreshToken: string;
 describe('Auth Flow', () => {
   afterAll(async () => {
     // Cleanup test data
-    await prisma.user.deleteMany({ where: { email: TEST_EMAIL } });
-    await prisma.$disconnect();
+    await User.deleteMany({ email: TEST_EMAIL });
   });
 
   describe('POST /api/auth/register', () => {

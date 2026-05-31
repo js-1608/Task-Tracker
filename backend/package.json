@@ -35,7 +35,7 @@
     "testMatch": [
       "**/*.test.ts"
     ],
-    "setupFiles": [
+    "setupFilesAfterEnv": [
       "<rootDir>/tests/setup.ts"
     ],
     "globals": {

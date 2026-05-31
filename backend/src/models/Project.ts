@@ -18,7 +18,7 @@ const ProjectSchema = new Schema<IProject>(
     orgId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
     createdById: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { virtuals: true } },
 );
 
 ProjectSchema.index({ orgId: 1 });

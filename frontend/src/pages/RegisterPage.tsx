@@ -32,29 +32,31 @@ export default function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-icon"><Layers size={24} color="white" /></div>
-          <h1>Create Workspace</h1>
-          <p>Set up your team in seconds</p>
+          <div className="auth-logo-icon">
+            <Layers size={20} color="#ffffff" />
+          </div>
+          <h1>Create your workspace</h1>
+          <p>Get started with Atlassian-style task boards</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="orgName">Organization Name</label>
-            <input id="orgName" type="text" placeholder="Acme Corp" value={form.orgName}
+            <label htmlFor="orgName">Organization name</label>
+            <input id="orgName" type="text" placeholder="e.g. Acme Corporation" value={form.orgName}
               onChange={set('orgName')} required autoFocus />
           </div>
 
           <div className="form-group">
-            <label htmlFor="name">Your Name</label>
-            <input id="name" type="text" placeholder="Jane Doe" value={form.name}
+            <label htmlFor="name">Your full name</label>
+            <input id="name" type="text" placeholder="e.g. Jane Doe" value={form.name}
               onChange={set('name')} required />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input id="email" type="email" placeholder="jane@acme.com" value={form.email}
+            <label htmlFor="email">Work email</label>
+            <input id="email" type="email" placeholder="e.g. jane@company.com" value={form.email}
               onChange={set('email')} required />
           </div>
 
@@ -64,14 +66,14 @@ export default function RegisterPage() {
               value={form.password} onChange={set('password')} required />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={loading}>
-            {loading ? <span className="spinner" /> : <Sparkles size={16} />}
-            {loading ? 'Creating workspace…' : 'Create Workspace'}
+          <button type="submit" className="btn btn-primary btn-lg btn-full" style={{ marginTop: '0.5rem' }} disabled={loading}>
+            {loading ? <span className="spinner" style={{ borderTopColor: '#ffffff' }} /> : <Sparkles size={14} />}
+            {loading ? 'Creating workspace…' : 'Create workspace'}
           </button>
         </form>
 
         <div className="auth-footer">
-          Already have an account?{' '}
+          Already have a TaskTracker account?{' '}
           <Link to="/login">Sign in</Link>
         </div>
       </div>

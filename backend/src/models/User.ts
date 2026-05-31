@@ -24,11 +24,11 @@ const UserSchema = new Schema<IUser>(
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 
-UserSchema.index({ email: 1 });
 UserSchema.index({ orgId: 1 });
 
 // Never return passwordHash in JSON responses
 UserSchema.set('toJSON', {
+  virtuals: true,
   transform: (_doc: unknown, ret: unknown) => {
     const obj = ret as Record<string, unknown>;
     delete obj['passwordHash'];
