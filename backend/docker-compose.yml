@@ -61,7 +61,7 @@ services:
   # ─── React Frontend ─────────────────────────────────────────────────────────
   client:
     build:
-      context: ./client
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: tasktracker_client
     restart: unless-stopped
