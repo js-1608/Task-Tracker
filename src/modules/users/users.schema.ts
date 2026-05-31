@@ -1,10 +1,11 @@
 // src/modules/users/users.schema.ts
 import { z } from 'zod';
-import { Role } from '@prisma/client';
+import { Role } from '../../models/User';
 
 export const updateRoleSchema = z.object({
-  // Zod v4: use 'error' instead of 'errorMap' for custom error messages
-  role: z.nativeEnum(Role, { error: 'Role must be ADMIN, MANAGER, or MEMBER' }),
+  role: z.enum(['ADMIN', 'MANAGER', 'MEMBER'] as [Role, ...Role[]], {
+    error: 'Role must be ADMIN, MANAGER, or MEMBER',
+  }),
 });
 
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;

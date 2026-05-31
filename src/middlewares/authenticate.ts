@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '../utils/jwt';
 import { ApiError } from '../utils/ApiError';
-import { Role } from '@prisma/client';
+import { Role } from '../models/User';
 
 export function authenticate(req: Request, _res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;

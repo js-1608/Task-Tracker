@@ -6,12 +6,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "start": "node dist/src/server.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "ts-node prisma/seed.ts",
-    "db:studio": "prisma studio",
+    "dev": "nodemon",
+    "db:seed": "ts-node src/scripts/seed.ts",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch --runInBand",
     "test:coverage": "jest --coverage --runInBand --forceExit",
@@ -22,15 +18,14 @@
     "rest-api",
     "rbac",
     "jwt",
+    "mongodb",
+    "mongoose",
     "redis",
     "docker",
-    "prisma"
+    "react"
   ],
   "author": "",
   "license": "MIT",
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
@@ -50,9 +45,6 @@
     }
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "@types/pg": "^8.20.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -61,7 +53,7 @@
     "helmet": "^8.2.0",
     "ioredis": "^5.11.0",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.21.0",
+    "mongoose": "^9.6.3",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^14.0.0",
@@ -81,7 +73,6 @@
     "@types/uuid": "^10.0.0",
     "jest": "^30.4.2",
     "nodemon": "^3.1.14",
-    "prisma": "^7.8.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",

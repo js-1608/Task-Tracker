@@ -1,25 +1,21 @@
 // src/config/db.ts
-// Prisma v7 requires passing an adapter for direct DB connections
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import mongoose from 'mongoose';
+import { logger } from '../utils/logger';
 
-function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL!;
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-  return new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+export async function connectDB(): Promise<void> {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error('MONGODB_URI environment variable is not set');
+
+  mongoose.connection.on('connected', () => logger.info('✅ MongoDB connected'));
+  mongoose.connection.on('error', (err) => logger.error('❌ MongoDB error', err));
+  mongoose.connection.on('disconnected', () => logger.warn('⚠️  MongoDB disconnected'));
+
+  await mongoose.connect(uri, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
   });
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
+export async function disconnectDB(): Promise<void> {
+  await mongoose.disconnect();
 }

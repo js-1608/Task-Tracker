@@ -1,56 +1,57 @@
 // src/modules/projects/projects.service.ts
-import { prisma } from '../../config/db';
+import { Types } from 'mongoose';
+import { Project } from '../../models/Project';
 import { ApiError } from '../../utils/ApiError';
 import { CreateProjectInput, UpdateProjectInput } from './projects.schema';
 
-const PROJECT_SELECT = {
-  id: true,
-  name: true,
-  description: true,
-  orgId: true,
-  createdAt: true,
-  updatedAt: true,
-  createdBy: { select: { id: true, name: true, email: true } },
-  _count: { select: { tasks: true } },
-};
+const POPULATE_CREATOR = { path: 'createdById', select: 'id name email', model: 'User' };
 
 export async function listProjects(orgId: string) {
-  return prisma.project.findMany({
-    where: { orgId },
-    select: PROJECT_SELECT,
-    orderBy: { createdAt: 'desc' },
-  });
+  return Project.find({ orgId: new Types.ObjectId(orgId) })
+    .populate(POPULATE_CREATOR)
+    .sort({ createdAt: -1 })
+    .lean();
 }
 
 export async function getProjectById(orgId: string, projectId: string) {
-  const project = await prisma.project.findFirst({
-    where: { id: projectId, orgId },
-    select: PROJECT_SELECT,
-  });
+  if (!Types.ObjectId.isValid(projectId)) throw ApiError.notFound(`Project ${projectId} not found`);
+  const project = await Project.findOne({
+    _id: projectId,
+    orgId: new Types.ObjectId(orgId),
+  })
+    .populate(POPULATE_CREATOR)
+    .lean();
   if (!project) throw ApiError.notFound(`Project ${projectId} not found`);
   return project;
 }
 
 export async function createProject(orgId: string, userId: string, input: CreateProjectInput) {
-  return prisma.project.create({
-    data: { ...input, orgId, createdById: userId },
-    select: PROJECT_SELECT,
+  const project = await Project.create({
+    ...input,
+    orgId: new Types.ObjectId(orgId),
+    createdById: new Types.ObjectId(userId),
   });
+  return project.populate(POPULATE_CREATOR);
 }
 
 export async function updateProject(orgId: string, projectId: string, input: UpdateProjectInput) {
-  const project = await prisma.project.findFirst({ where: { id: projectId, orgId } });
+  if (!Types.ObjectId.isValid(projectId)) throw ApiError.notFound(`Project ${projectId} not found`);
+  const project = await Project.findOneAndUpdate(
+    { _id: projectId, orgId: new Types.ObjectId(orgId) },
+    input,
+    { new: true },
+  )
+    .populate(POPULATE_CREATOR)
+    .lean();
   if (!project) throw ApiError.notFound(`Project ${projectId} not found`);
-
-  return prisma.project.update({
-    where: { id: projectId },
-    data: input,
-    select: PROJECT_SELECT,
-  });
+  return project;
 }
 
 export async function deleteProject(orgId: string, projectId: string) {
-  const project = await prisma.project.findFirst({ where: { id: projectId, orgId } });
+  if (!Types.ObjectId.isValid(projectId)) throw ApiError.notFound(`Project ${projectId} not found`);
+  const project = await Project.findOneAndDelete({
+    _id: projectId,
+    orgId: new Types.ObjectId(orgId),
+  });
   if (!project) throw ApiError.notFound(`Project ${projectId} not found`);
-  await prisma.project.delete({ where: { id: projectId } });
 }

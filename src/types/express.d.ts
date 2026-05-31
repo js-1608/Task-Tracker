@@ -1,5 +1,5 @@
 // src/types/express.d.ts
-import { Role } from '@prisma/client';
+import { Role } from '../models/User';
 
 declare global {
   namespace Express {
