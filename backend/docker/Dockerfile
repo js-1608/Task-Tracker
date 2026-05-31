@@ -5,12 +5,7 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY prisma ./prisma/
-
 RUN npm ci
-
-# Generate Prisma client
-RUN npx prisma generate
 
 COPY src ./src
 
@@ -24,13 +19,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package*.json ./
-COPY prisma ./prisma/
-
 # Only install production deps
 RUN npm ci --omit=dev
-
-# Generate Prisma client in production stage
-RUN npx prisma generate
 
 COPY --from=builder /app/dist ./dist
 

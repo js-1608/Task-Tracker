@@ -1,6 +1,6 @@
 # Team Task Tracker API
 
-A production-grade REST API for managing tasks within a team. Built with Node.js + TypeScript, Express, PostgreSQL (Prisma), Redis, and Docker.
+A production-grade REST API for managing tasks within a team. Built with Node.js + TypeScript, Express, MongoDB (Mongoose), Redis, and Docker.
 
 ## Features
 
@@ -35,20 +35,17 @@ docker compose up
 ```
 
 **First run automatically:**
-- Runs `prisma migrate deploy` to apply all migrations
 - Seeds demo users (see credentials below)
 
 ### Option 2: Local Development
 
 ```bash
-# Prerequisites: PostgreSQL + Redis running locally
+# Prerequisites: MongoDB + Redis running locally
 
 cp .env.example .env
-# Edit .env with your local DB/Redis URLs
+# Edit .env with your local MongoDB/Redis URLs
 
 npm install
-npm run db:generate      # Generate Prisma client
-npm run db:migrate       # Apply migrations
 npm run db:seed          # Seed demo data
 npm run dev              # Start dev server with hot reload
 ```
@@ -241,7 +238,7 @@ Tests cover:
 |-------|-----------|
 | Runtime | Node.js 20 + TypeScript |
 | Framework | Express.js |
-| Database | PostgreSQL 16 + Prisma ORM |
+| Database | MongoDB 7 + Mongoose |
 | Cache | Redis 7 (ioredis) |
 | Auth | JWT (jsonwebtoken) + bcryptjs |
 | Validation | Zod |
