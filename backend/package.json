@@ -2,10 +2,11 @@
   "name": "task-tracker-api",
   "version": "1.0.0",
   "description": "REST API for team-based task management with RBAC, JWT auth, Redis caching, and Docker deployment",
-  "main": "dist/src/server.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "start": "node dist/src/server.js",
+    "postinstall": "npm run build",
+    "start": "node dist/server.js",
     "dev": "nodemon",
     "db:seed": "ts-node src/scripts/seed.ts",
     "test": "jest --runInBand --forceExit",
