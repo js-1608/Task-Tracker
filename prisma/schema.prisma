@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  BLOCKED
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users    User[]
+  projects Project[]
+  tasks    Task[]
+
+  @@map("organizations")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         Role     @default(MEMBER)
+  orgId        String   @map("org_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  organization   Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  refreshTokens  RefreshToken[]
+  assignedTasks  Task[]         @relation("TaskAssignee")
+  createdTasks   Task[]         @relation("TaskCreator")
+  createdProjects Project[]
+
+  @@index([email])
+  @@index([orgId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  orgId       String   @map("org_id")
+  createdById String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+  tasks        Task[]
+
+  @@index([orgId])
+  @@map("projects")
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  priority    Priority   @default(MEDIUM)
+  status      TaskStatus @default(TODO)
+  assigneeId  String?    @map("assignee_id")
+  projectId   String     @map("project_id")
+  orgId       String     @map("org_id")
+  dueDate     DateTime?  @map("due_date")
+  createdById String     @map("created_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  completedAt DateTime?  @map("completed_at")
+
+  assignee     User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
+
+  // Indexes on frequently queried fields (documented in README)
+  @@index([status])
+  @@index([assigneeId])
+  @@index([dueDate])
+  @@index([orgId, status])    // composite for org-scoped filtered queries
+  @@index([orgId, assigneeId]) // composite for cache key lookups
+  @@map("tasks")
+}
